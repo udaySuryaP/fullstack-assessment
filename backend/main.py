@@ -225,7 +225,7 @@ tracks = [
 @app.get("/tracks")
 def get_tracks(
     page: int = Query(default=1, ge=1),
-    limit: int = Query(default=10, ge=1, le=20),
+    limit: int = Query(default=5, ge=1, le=20),
 ):
     start = (page - 1) * limit
     end = start + limit

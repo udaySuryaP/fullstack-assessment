@@ -18,7 +18,7 @@ interface TracksResponse {
   total: number;
 }
 
-const limit = 10;
+const limit = 5;
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function Home() {
@@ -59,7 +59,7 @@ export default function Home() {
     <main className="mx-auto min-h-screen max-w-4xl px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-3xl font-semibold text-slate-900">Audio Track Catalogue</h1>
-        <p className="mt-2 text-slate-600">Browse the catalogue ten tracks at a time.</p>
+        <p className="mt-2 text-slate-600">Browse the catalogue five tracks at a time.</p>
       </header>
 
       <section aria-live="polite">
