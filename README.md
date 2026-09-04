@@ -1,6 +1,6 @@
 # Audio Track Catalogue
 
-A small full-stack assessment project that displays a paginated catalogue of fictional audio tracks.
+A small full-stack assessment project that displays a paginated catalogue of real music tracks with album artwork.
 
 ## Stack
 

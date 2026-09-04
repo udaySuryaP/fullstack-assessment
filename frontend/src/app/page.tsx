@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface Track {
   id: number;
@@ -8,6 +9,8 @@ interface Track {
   artist: string;
   genre: string;
   duration: string;
+  artwork: string;
+  album_url: string;
 }
 
 interface TracksResponse {
@@ -15,7 +18,7 @@ interface TracksResponse {
   total: number;
 }
 
-const limit = 5;
+const limit = 10;
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function Home() {
@@ -56,7 +59,7 @@ export default function Home() {
     <main className="mx-auto min-h-screen max-w-4xl px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-3xl font-semibold text-slate-900">Audio Track Catalogue</h1>
-        <p className="mt-2 text-slate-600">Browse the catalogue five tracks at a time.</p>
+        <p className="mt-2 text-slate-600">Browse the catalogue ten tracks at a time.</p>
       </header>
 
       <section aria-live="polite">
@@ -69,7 +72,7 @@ export default function Home() {
             <table className="w-full border-collapse text-left">
               <thead className="bg-slate-100 text-sm text-slate-700">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Title</th>
+                  <th className="px-4 py-3 font-medium">Track</th>
                   <th className="px-4 py-3 font-medium">Artist</th>
                   <th className="px-4 py-3 font-medium">Genre</th>
                   <th className="px-4 py-3 font-medium">Duration</th>
@@ -78,7 +81,24 @@ export default function Home() {
               <tbody>
                 {tracks.map((track) => (
                   <tr className="border-t border-slate-200" key={track.id}>
-                    <td className="px-4 py-3 font-medium text-slate-900">{track.title}</td>
+                    <td className="px-4 py-3">
+                      <a
+                        className="flex min-w-52 items-center gap-3 hover:underline"
+                        href={track.album_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Image
+                          src={track.artwork}
+                          alt={`${track.title} album cover`}
+                          width={64}
+                          height={64}
+                          sizes="64px"
+                          className="h-12 w-12 rounded-lg sm:h-16 sm:w-16"
+                        />
+                        <span className="font-medium text-slate-900">{track.title}</span>
+                      </a>
+                    </td>
                     <td className="px-4 py-3 text-slate-700">{track.artist}</td>
                     <td className="px-4 py-3 text-slate-700">{track.genre}</td>
                     <td className="px-4 py-3 text-slate-700">{track.duration}</td>
