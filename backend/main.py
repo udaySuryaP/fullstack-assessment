@@ -6,7 +6,8 @@ app = FastAPI(title="Audio Track Catalogue API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000",
-                   "https://fullstack-assessment-sigma.vercel.app",]
+                   "https://fullstack-assessment-sigma.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
