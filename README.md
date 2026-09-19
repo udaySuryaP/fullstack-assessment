@@ -1,46 +1,104 @@
 # Audio Track Catalogue
 
-A small full-stack assessment project that displays a paginated catalogue of real music tracks with album artwork.
+A compact full-stack assessment project for browsing a paginated catalogue of music tracks. It pairs a FastAPI JSON API with a responsive Next.js interface and keeps the frontend and backend deployable as separate services.
+
+## Live demo
+
+[Open the deployed catalogue](https://fullstack-assessment-sigma.vercel.app)
+
+The hosted frontend depends on its deployed API. If that service is unavailable, the interface shows a clear recovery message instead of failing silently.
+
+## Architecture
+
+```text
+Browser
+  |
+  | GET /tracks?page=<number>&limit=<number>
+  v
+Next.js frontend  --->  FastAPI backend  --->  in-memory track catalogue
+```
+
+- The Next.js App Router client owns loading, error, pagination, and table presentation states.
+- FastAPI validates query parameters, selects the requested slice, and returns the total record count.
+- CORS is configured at the API boundary for the local and deployed frontend origins.
+- The dataset is intentionally in memory to keep the assessment focused on the API and client integration.
+
+## API and pagination
+
+### `GET /tracks`
+
+| Parameter | Default | Validation | Purpose |
+| --- | ---: | --- | --- |
+| `page` | `1` | integer, minimum `1` | Page to return |
+| `limit` | `5` | integer, `1` to `20` | Tracks per page |
+
+Example response:
+
+```json
+{
+  "tracks": [
+    {
+      "id": 1,
+      "title": "Starboy",
+      "artist": "The Weeknd",
+      "genre": "R&B/Soul",
+      "duration": "3:50",
+      "artwork": "https://...",
+      "album_url": "https://music.apple.com/..."
+    }
+  ],
+  "total": 23
+}
+```
+
+The frontend requests five records at a time and derives the page count from `total`. Previous and next controls are disabled while loading and at the respective boundaries.
 
 ## Stack
 
-- FastAPI backend with an in-memory Python dataset
-- Next.js App Router frontend with TypeScript and Tailwind CSS
+| Area | Technology |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
+| Backend | Python, FastAPI, Uvicorn |
+| Deployment | Vercel frontend with a separately hosted API |
 
-## Run the backend
+## Local setup
 
-From the `backend` directory:
+### 1. Start the backend
 
-```powershell
+```sh
+cd backend
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
 ```
 
-The API is available at `http://localhost:8000/tracks`.
-
-## Run the frontend
-
-From the `frontend` directory in a second terminal:
+Activate the environment:
 
 ```powershell
+.venv\Scripts\Activate.ps1
+```
+
+On macOS or Linux, use `source .venv/bin/activate` instead. Then install and run the API:
+
+```sh
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --reload --port 8000
+```
+
+The API is available at `http://localhost:8000/tracks`. Interactive API documentation is available at `http://localhost:8000/docs`.
+
+### 2. Start the frontend
+
+In a second terminal:
+
+```sh
+cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The frontend uses `http://localhost:8000` by default. To use a different backend URL, copy `.env.example` to `.env.local` and change `NEXT_PUBLIC_API_URL`.
+Open `http://localhost:3000`.
 
-## Architecture scenario responses
+The frontend uses `http://localhost:8000` by default. To target another API, copy `frontend/.env.example` to `frontend/.env.local` and set `NEXT_PUBLIC_API_URL`.
 
-`Q1.` A teammate suggests putting the third-party service's API key directly in the frontend code, so the browser can call it directly. What's the problem with that, and where should the key actually live instead?
+## Assessment context
 
-`Answer:` Putting the key in frontend code exposes it to anyone using the application. They could call the provider directly, consume the quota, and increase costs. The key should live on the backend as a secret environment variable. During local development, it should be stored in an ignored environment file and never committed.
-
-`Q2.` Once the key is moved off the frontend, anyone who can reach your backend can still trigger those paid calls. What would you add so only your own app's users can trigger them? 
-
-`Answer:` If the endpoint is publicly reachable, moving the key to the backend is not enough. I would add authentication, enforce authorization for each user, and apply rate limiting where appropriate.
-
-`Q3.` Say your frontend (on Vercel) calls your backend (on Render), and the browser blocks the request with a cross-origin error, even though the code looks correct. What's most likely misconfigured, and where would you go fix it? 
-
-`Answer:` Because the frontend and backend use different origins, the browser enforces CORS. If the backend has not explicitly allowed the deployed frontend origin, the browser can block an otherwise valid request. I would first correct the backend CORS middleware rather than the Vercel configuration.
+The original architecture questions and answers are preserved in [ASSESSMENT_NOTES.md](./ASSESSMENT_NOTES.md) so the project README can stay focused on the application itself.
